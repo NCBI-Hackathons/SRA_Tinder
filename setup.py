@@ -23,7 +23,7 @@ def find_version(*file_paths):
 
 setup(
     name = 'SRA_Tinder',
-    version = find_version('src','__init__.py'),
+    version = find_version('SRA_Tinder','__init__.py'),
     packages = find_packages(),
     scripts = [
     ],
