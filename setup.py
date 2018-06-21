@@ -38,6 +38,7 @@ setup(
         #'':['*.cyx']    
     },
     install_requires = [		
+        'aiofiles'
     ],
     include_package_data=True,
 
