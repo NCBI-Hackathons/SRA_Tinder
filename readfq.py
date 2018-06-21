@@ -35,7 +35,6 @@ if __name__ == "__main__":
     for name, seq, qual in readfq(sys.stdin):
         i+=1
         if i>100: break
-        print(name)
         n += 1
         slen += len(seq)
         qlen += qual and len(qual) or 0
