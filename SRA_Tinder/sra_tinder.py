@@ -33,45 +33,43 @@ class sra_tinder:
             output.append('\t'.join([self.sra_file_name] + values + ['\n']))
         return output
 
-    def check_qc(self):
-        qualities = {}
-        with open(self.sra_file_name + '.fastq', 'r') as infile:
-            quality = False
-            for line in infile:
-                if quality:
-                    for char in line:
-                        qualities[ord(char)] = qualities.get(ord(char), 0) + 1
-                if line.startswith("+"):
-                    quality = True
-                    continue
-        mean = 0
-        count = 0
-        for k,v in qualities.items():
-            mean += k*v
-            count += v
-
-        return (mean/count) - 33
 
     def scrape_qc(self):
+        url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(self.sra_file_name)
+        string = ur.urlopen(url).read().decode()
+        table = re.findall('<table class="zebra run-metatable">.*?<div class="center">Phred quality score<\/div>', string, re.DOTALL)
+        table = str(table)
+        entries = re.findall('<span title="(.*?) : (.*?)" style=', table, re.DOTALL)
+        d = {}
+        for score in entries:
+            d[int(score[0])] = int(score[1].replace(',', ''))
+        total = 0
+        count = 0
+        for k, v in d.items():
+            total += k * v
+            count += v
+        return total/count
 
-# sra_tinder('SRR3403834').scrape_organisms()
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('-i', '--input', help='Input File', required=True)
-    parser.add_argument('-n', help='Some Number', type=int)
-    parser.add_argument('-v', help='Verbose', action='store_true')
+x = sra_tinder('SRR3403834').scrape_qc()
+print(x)
 
-    try:
-        args = parser.parse_args()
-    except:
-        parser.print_help()
-        sys.exit(1)
-
-
-    line = args.input
-    my_tinder = sra_tinder(line)
-    i = my_tinder.check_qc()
-    # ii = my_tinder.adapters()
-    iii = my_tinder.scrape_organisms()
-    print('\t'.join([line, str(i),  str(iii)]))
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser(description='')
+#     parser.add_argument('-i', '--input', help='Input File', required=True)
+#     parser.add_argument('-n', help='Some Number', type=int)
+#     parser.add_argument('-v', help='Verbose', action='store_true')
+#
+#     try:
+#         args = parser.parse_args()
+#     except:
+#         parser.print_help()
+#         sys.exit(1)
+#
+#
+#     line = args.input
+#     my_tinder = sra_tinder(line)
+#     i = my_tinder.check_qc()
+#     # ii = my_tinder.adapters()
+#     iii = my_tinder.scrape_organisms()
+#     print('\t'.join([line, str(i),  str(iii)]))
