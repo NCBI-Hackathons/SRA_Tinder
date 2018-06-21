@@ -22,7 +22,7 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 setup(
-    name = 'minus80',
+    name = 'SRA_Tinder',
     version = find_version('src','__init__.py'),
     packages = find_packages(),
     scripts = [
