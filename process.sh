@@ -8,5 +8,5 @@ fastq-dump --split-files --defline-seq '@$ac.$si.$sg/$ri' --defline-qual '+' -Z 
 fastqc $1.fq
 
 qual=$(bioawk -c fastx '{ print ">"$name; print meanqual($qual) }' $1.fq|grep -v ">"|awk '{s+=$1}END{print "",s/NR}' RS=" ")
-echo "Found quality: $qual"
+echo $1 $'\t' $qual  >> table.txt
 
