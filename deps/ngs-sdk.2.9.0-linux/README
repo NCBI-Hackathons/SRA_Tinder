@@ -1,0 +1,140 @@
+DISTRIBUTION OF NGS APIS
+
+Contents:
+
+  NGS C++ Client SDK
+    "include/ngs"                - contains C++ headers
+                                   for developing NGS client code
+    "include/ncbi-vdb"           - contains C++ header for using NCBI NGS engine
+    "include/ngs-bam"            - contains C++ header for using NCBI BAM engine
+    "lib64"                      - 64-bit release libraries
+
+  NGS Java Client SDK
+    "ngs-java/ngs-java.jar"      - Java client jar
+                                   ( requires libngs-sdk and libncbi-vdb
+                                     dynamic libraries )
+    "ngs-java/ngs-src.jar"       - Java client source code jar
+
+  NGS Python Client SDK
+    "ngs-python"                 - Python NGS package
+
+  NGS Examples
+    "share"                      - C++ examples
+    "ngs-python/examples-python" - Python examples
+    "ngs-java/examples-java"     - Java examples
+    "ngs-java/ngs-examples.jar"  - Java examples jar
+
+  Documentation
+    "doc"                        - contains Javadoc documentation
+                                   from NGS Java Client SDK source files
+    "ngs-java/ngs-doc.jar"       - Javadoc documentation jar
+
+  Sratoolkit binaries
+    "bin64"                      - contains some 64-bit utility programs
+
+================================================================================
+
+In the following examples it is assumed that ngs package (ngs-sdk.X.X.X-linux
+or ngs-sdk.X.X.X-mac) is located in $NGS_SDK directory.
+
+Building and running examples
+  First of all add library directory to your LD_LIBRARY_PATH
+    e.g., "export LD_LIBRARY_PATH=$NGS_SDK/lib64:$LD_LIBRARY_PATH"
+
+
+  C++
+
+    Building examples
+      - "cd $NGS_SDK/share"
+      - run "make"
+
+    Running examples
+      - FragTest accession NumChunks ChunkNo
+        e.g. "./FragTest SRR619505 1 1"
+
+      - AlignTest accession NumChunks ChunkNo
+        e.g. "./AlignTest SRR619505 1 1"
+
+      - AlignSliceTest accession reference start stop
+        e.g. "./AlignSliceTest SRR1121656 1 10000 10010"
+
+      - RefTest accession
+        e.g. "./RefTest SRR543323"
+
+      - FastqTableDump accession
+        e.g. "./FastqTableDump SRR619505"
+
+      - PileupTest accession reference start stop
+        e.g. "./PileupTest SRR1121656 1 10000 10010"
+
+      - DumpReferenceFASTA accession
+        e.g. "./DumpReferenceFASTA SRR619505"
+
+
+  Java
+
+    Building examples
+      - add ngs-java.jar to your CLASSPATH
+        e.g. "export CLASSPATH=$NGS_SDK/ngs-java/ngs-java.jar"
+      - "cd $NGS_SDK/ngs-java/examples-java"
+      - run "make"
+
+    Running examples
+      - create a variable containing library directory
+        e.g. "NGSLIB=$NGS_SDK/lib64"
+      - add ngs-java.jar and NGS-JavaTest.jar to your CLASSPATH
+        e.g. "export CLASSPATH=$NGS_SDK/ngs-java/ngs-java.jar:$NGS_SDK/ngs-java/examples-java/NGS-JavaTest.jar"
+
+      - java examples.FragTest accession NumChunks ChunkNo
+        e.g. "java -Djava.library.path=$NGSLIB examples.FragTest SRR619505 1 1"
+
+      - java examples.AlignTest accession NumChunks ChunkNo
+        e.g. "java -Djava.library.path=$NGSLIB examples.AlignTest SRR619505 1 1"
+
+      - java examples.AlignSliceTest accession reference start stop
+        e.g. "java -Djava.library.path=$NGSLIB examples.AlignSliceTest SRR1121656 1 10000 10010"
+
+      - java examples.RefTest accession
+        e.g. "java -Djava.library.path=$NGSLIB examples.RefTest SRR543323"
+
+      - java examples.PileupTest accession reference start stop
+        e.g. "java -Djava.library.path=$NGSLIB examples.PileupTest SRR1121656 1 10000 10010"
+
+      - java examples.ReadGroupTest accession
+        e.g. "java -Djava.library.path=$NGSLIB examples.ReadGroupTest SRR543323"
+
+      - java examples.DumpReferenceFASTA accession
+        e.g. "java -Djava.library.path=$NGSLIB examples.DumpReferenceFASTA SRR619505"
+
+
+  Python
+    - At least python 2.6 is required to install NGS package
+    - install NGS package:
+      cd $NGS_SDK/ngs-python
+      python setup.py install --user
+      cd $NGS_SDK/ngs-python/examples-python
+
+    Running examples
+      Make sure library directory is in your LD_LIBRARY_PATH
+        e.g. "export LD_LIBRARY_PATH=$NGS_SDK/lib64:$LD_LIBRARY_PATH"
+
+      - python FragTest.py accession NumChunks ChunkNo
+        e.g. "python FragTest.py SRR619505 1 1"
+
+      - python AlignTest.py accession NumChunks ChunkNo
+        e.g. "python AlignTest.py SRR619505 1 1"
+
+      - python AlignSliceTest.py accession reference start stop
+        e.g. "python AlignSliceTest.py SRR1121656 1 10000 10010"
+
+      - python RefTest.py accession
+        e.g. "python RefTest.py SRR543323"
+
+      - python PileupTest.py accession reference start stop
+        e.g. "python PileupTest.py SRR1121656 1 10000 10010"
+
+      - python DumpReferenceFASTA.py accession
+        e.g. "python DumpReferenceFASTA.py SRR619505"
+
+    Note: Examples require python version higher that 2.6.
+          For python 2.6 use examples in files "*26.py"
