@@ -47,7 +47,7 @@ class sra_tinder:
                     continue
         mean = 0
         count = 0
-        for k,v in qualities.items()
+        for k,v in qualities.items():
             mean += k*v
             count += v
 
