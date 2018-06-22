@@ -64,8 +64,7 @@ class sra_tinder:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-i', '--input', help='Input File', required=True)
-    parser.add_argument('-n', help='Some Number', type=int)
-    parser.add_argument('-v', help='Verbose', action='store_true')
+
 
     try:
         args = parser.parse_args()
