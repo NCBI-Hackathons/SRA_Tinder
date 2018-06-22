@@ -56,11 +56,11 @@ add in the search SRA and get a massive accesion list auto lookup
 # Streaming Demo
 
 Start streaming some FASTQ files from the SRA
-![](docs/start_streaming)
+![d1](/docs/start_streaming)
 
 Streams are exposed as named linux pipes on the filesystem
-![](docs/show_pipes.png)
+![d2](/docs/show_pipes.png)
 
 Streams are filled in demand in parallel by python
-1[](docs/parallel_stream.png)
+![d3](/docs/parallel_stream.png)
 
