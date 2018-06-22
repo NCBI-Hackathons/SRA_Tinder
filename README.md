@@ -31,3 +31,16 @@ $ python setup.py install
 ```
 
 
+Input is a SRRnumber list from runselector, output is a tab delemted table.
+
+python sra_tinder_matches.py tests/SRA_Acc_list.txt
+
+To get the SRA_Acc_list.txt
+GO to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a project number. 
+
+#streach goals
+add the ngs code instead of scraping the web
+graph summerize the output table
+
+
+
