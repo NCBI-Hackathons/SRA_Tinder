@@ -1,12 +1,13 @@
 # SRA_Tinder
+*Find hot data sets in your area (of research)!*
 ![logo](/docs/logo.png)
 
-Find hot data sets in your area (of research)!
+
 Have you ever spent weeks working SRA data and then decided it just wasn't going to work? That's like going on a blind date with someone you have no interest in. It's a huge waste of your time!
 
 ![Nope](/docs/nope.jpg)
 
-Here we introduct SRA_tinder, the package that allows you to preview your fastq files before you date them. Go ahead, swipe left. Don't date that ugly data! Or Swipe right and find the love of your data life.
+Here we introduct SRA_Tinder, the package that allows you to preview your fastq files before you date them. Go ahead, swipe left. Don't date that ugly data! Or Swipe right and find the love of your data life.
 Our goal is to show you only the most essential information about your SRA data sets, and let you decide which ones are right for you.
 
 
