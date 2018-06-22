@@ -47,7 +47,7 @@ class SRA_Stream():
                         qualities=it.getFragmentQualities()
                         ids=it.getFragmentId()
                         if bases:
-                            read = f'@{ids}\n{bases}\n+\n{qualities}\n'
+                            read = f'@{ids}\n{bases}\n+\n{qualities}'
                             print(read,file=pipe)
         os.unlink(foo)
 
