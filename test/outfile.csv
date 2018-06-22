@@ -1,4 +1,4 @@
-,Accession,mean quality score,most abundent organism,percent abundence,number of organims greater than 1% abundence,totalreads,withadapter,mean_readlen,std_readlen,readlen_trimmed,std_readlen_trimmed
+,Accession,mean_quality_score,most_abundent_organism,percent_abundence,number_of_organims_greater_than_1%_abundence,totalreads,withadapter,mean_readlen,std_readlen,readlen_trimmed,std_readlen_trimmed
 0,SRR1105736,34.32,Bacteria,0.0,1,1001,151,50.0,0.0,19.1523178807947,6.730132246686702
 1,SRR1105737,36.22,Pan,0.2,4,1001,48,50.0,0.0,18.416666666666668,8.197645325877968
 2,SRR1105738,36.92,Homosapiens,47.3,4,1001,30,50.0,0.0,23.866666666666667,12.763837806692608
