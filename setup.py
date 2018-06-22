@@ -26,6 +26,7 @@ setup(
     version = find_version('SRA_Tinder','__init__.py'),
     packages = find_packages(),
     scripts = [
+        'SRA_Tinder/CLI/sra_tinder'
     ],
     ext_modules = [],
     cmdclass = {
@@ -38,9 +39,8 @@ setup(
         #'':['*.cyx']    
     },
     install_requires = [		
-        'aiofiles', 
-	'numpy=1.14.5', 
-	'biopython==1.71'
+	    'numpy==1.14.5', 
+	    'biopython==1.71'
     ],
     include_package_data=True,
 
