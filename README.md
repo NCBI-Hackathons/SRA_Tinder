@@ -44,10 +44,10 @@ $ python sra_tinder_matches.py tests/SRA_Acc_list.txt
 To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a SRNA project number and click Accession List. 
 
 
-#streach goals
-add the ngs code instead of scraping the web. This means we don't break when SRA changers there webstie, and we could easily take in fastq files instead of SRA accesssions.
-graph summerize the output table
-add in the search SRA and get a massive accesion list auto lookup
+# Streach goals
+- add the ngs code instead of scraping the web. This means we don't break when SRA changers there webstie, and we could easily take in fastq files instead of SRA accesssions.
+- graph summerize the output table
+- add in the search SRA and get a massive accesion list auto lookup
 
 
 
