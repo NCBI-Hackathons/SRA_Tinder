@@ -2,6 +2,14 @@ import asyncio
 import os
 import aiofiles
 
+import sys
+import traceback
+
+from ngs import NGS
+from ngs.ErrorMsg import ErrorMsg
+from ngs.ReadCollection import ReadCollection
+from ngs.Read import Read
+from ngs.ReadIterator import ReadIterator
 
 
 class SRA_Stream():
@@ -9,11 +17,50 @@ class SRA_Stream():
     def __init__(self):
         pass
 
+    def run(acc, splitNum=1, splitNo=1):
+        '''
+        This is a blocking task, it needs to be run in an executor
+        '''
+        # open requested accession using SRA implementation of the API
+        with NGS.openReadCollection(acc) as run:
+            run_name = run.getName()
+
+            # compute window to iterate through
+            MAX_ROW = run.getReadCount()
+            chunk = MAX_ROW/splitNum
+            first = int(round(chunk*(splitNo-1)))
+            next_first = int(round(chunk*(splitNo)))
+            if next_first > MAX_ROW:
+                next_first = MAX_ROW
+
+            # start iterator on reads
+            with run.getReadRange(first+1, next_first-first, Read.all) as it:
+                i = 0
+                while it.nextRead():
+                    i += 1
+                    if i > 20000: 
+                        break
+                    while it.nextFragment():
+                        bases = it.getFragmentBases()
+                        qualities=it.getFragmentQualities()
+                        ids=it.getFragmentId()
+                        if bases:
+                            read = f'@{ids}\n{bases}\n+\n{qualities}\n'
+                            yield read
+                            #print ("\t{} - {}".format(bases, "aligned" if it.isAligned() else "unaligned"))
+                            #print ('@'+ids) 
+                            #print (bases)
+                            #print ('+'+ids)
+                            #print (qualities)
+                            #print ("\n")
+                #print ("Read {} spots for {}".format(i,  run_name))
+
     async def pipe_reads(self,pipe):
+        loop = asyncio.get_event_loop()
         async with aiofiles.open(pipe,mode='w') as pipe:
-            for i in range(10):
-                await pipe.write(str(i))
-                await asyncio.sleep(1)
+            future = loop.run_in_executor(None, self.run, pipe)
+            data = await future 
+            await pipe.write(str(data))
         return None
 
     def run(self,runs):
