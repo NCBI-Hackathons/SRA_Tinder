@@ -39,6 +39,7 @@ def trim_adaptors_check(records, adaptor, min_match=6):
     withadapter  = 0
     trimmedbases, totalbases = [], []
     for record in records:
+        print (record)
         len_record = len(record)
         totalbases.append(len_record)
         index = record.seq.find(adaptor[0:min_match])
@@ -77,9 +78,16 @@ def outputtrimedadapterfastqfile(fastqfile, outfastqfile, adpater):
 	return trimmed_reads
 
 def basesleftaftertriming(fastqfile):
-	m = loopadapters(fastqfile)
-	totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed = m[0]	
-	return totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed
+    with open(fastqfile) as IN:
+        i = 0
+        for line in IN:
+            i+=1
+        print(i)
+    return
+    m = loopadapters(fastqfile)
+    print(m)
+    totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed = m[0]	
+    return totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed
 
 if __name__=="__main__":
 	fastqfile = sys.argv[1]
