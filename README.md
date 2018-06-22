@@ -10,7 +10,7 @@ Have you ever spent weeks interacting with SRA data and then decided it just was
 Here we introduce SRA_Tinder, the package that allows you to preview your fastq files before you date them. Go ahead, swipe left. Don't date that ugly data! Or Swipe right and find the love of your data life.
 Our goal is to show you only the most essential information about your SRA data sets, and let you decide which ones are right for you.
 
-![alpha_example_output_1](/docs/alpha_example_output_1.jpg)
+![alpha_output_example_1](/docs/alpha_output_example_1.jpg)
 
 ## Installation
 Installation is a three step process:
