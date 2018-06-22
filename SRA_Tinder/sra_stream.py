@@ -16,16 +16,16 @@ class SRA_Stream():
     def __init__(self):
         pass
 
-    def stream_reads(self, foo, splitNum=1, splitNo=1):
+    def stream_reads(self, acc, splitNum=1, splitNo=1):
         '''
         This is a blocking task, it needs to be run in an executor
         '''
 
         # open requested accession using SRA implementation of the API
-        pipe = open(foo, 'w')        
-        with NGS.openReadCollection(foo) as run:
+        pipe_path = self.get_pipe(acc)
+        pipe = open(pipe_path, 'w')        
+        with NGS.openReadCollection(acc) as run:
             run_name = run.getName()
-
             # compute window to iterate through
             MAX_ROW = run.getReadCount()
             chunk = MAX_ROW/splitNum
@@ -33,7 +33,6 @@ class SRA_Stream():
             next_first = int(round(chunk*(splitNo)))
             if next_first > MAX_ROW:
                 next_first = MAX_ROW
-
             # start iterator on reads
             with run.getReadRange(first+1, next_first-first, Read.all) as it:
                 i = 0
@@ -48,7 +47,8 @@ class SRA_Stream():
                         if bases:
                             read = f'@{ids}\n{bases}\n+\n{qualities}'
                             print(read,file=pipe)
-        os.unlink(foo)
+        os.unlink(pipe_path)
+        return None
 
     def _create_pipe(self,acc):
         '''
@@ -73,7 +73,7 @@ class SRA_Stream():
             acc = acc + '.fastq'
         return acc
 
-    def run(self,accs, max_workers=4):
+    def stream(self,acc, pool=None):
         '''
         Stream SRA files into named pipes 
 
@@ -81,21 +81,17 @@ class SRA_Stream():
         ----------
         accs: an iterable of Run (str) names
 
-        Output
+        Returns
         ------
-        Opens a named pipe
+        A future containing s
         '''
+        print(f'Streaming {acc}', file=sys.stderr)
+        if pool is None:
+            pool = concurrent.futures.ProcessPoolExecutor()
+        self._create_pipe(acc)
         loop = asyncio.get_event_loop()
-        tasks = []
-        pool = concurrent.futures.ProcessPoolExecutor(max_workers=max_workers)
-        for acc in accs:
-            print(f'Streaming {acc}', file=sys.stderr)
-            self._create_pipe(acc)
-            future = loop.run_in_executor(pool, self.stream_reads, acc)
-            tasks.append(future)
-        results = asyncio.gather(*tasks)
-        loop.run_until_complete(results)
-        return results
+        future = loop.run_in_executor(pool, self.stream_reads, acc)
+        return future
 
 
 if __name__ == '__main__':
