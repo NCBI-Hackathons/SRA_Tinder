@@ -50,7 +50,30 @@ class SRA_Stream():
                             print(read,file=pipe)
         os.unlink(foo)
 
-    def run(self,accs):
+    def _create_pipe(self,acc):
+        '''
+        Create a named pipe based on an SRA Accession
+        '''
+        acc = self.get_pipe(acc)
+        try:
+            os.unlink(acc)
+        except FileNotFoundError as e:
+            pass
+        os.mkfifo(acc)
+
+    def get_pipe(self,acc):
+        '''
+        Get a pipe name based off the accession
+        name. 
+
+        NOTE: This does not open the pipe
+        '''
+        # Generate a generic filename
+        if not acc.endswith('.fastq'):
+            acc = acc + '.fastq'
+        return acc
+
+    def run(self,accs, max_workers=4):
         '''
         Stream SRA files into named pipes 
 
@@ -64,14 +87,10 @@ class SRA_Stream():
         '''
         loop = asyncio.get_event_loop()
         tasks = []
-        pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
+        pool = concurrent.futures.ProcessPoolExecutor(max_workers=max_workers)
         for acc in accs:
             print(f'Streaming {acc}', file=sys.stderr)
-            try:
-                os.unlink(acc)
-            except FileNotFoundError as e:
-                pass
-            os.mkfifo(acc)
+            self._create_pipe(acc)
             future = loop.run_in_executor(pool, self.stream_reads, acc)
             tasks.append(future)
         results = asyncio.gather(*tasks)
@@ -81,7 +100,8 @@ class SRA_Stream():
 
 if __name__ == '__main__':
     x = SRA_Stream()
-    test_sets = ['SRR1105736',
+    test_sets = [
+        'SRR1105736',
         'SRR1105737',
         'SRR1105738',
         'SRR1105739',
