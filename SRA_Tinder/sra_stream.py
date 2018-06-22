@@ -1,6 +1,5 @@
 import asyncio
 import os
-import aiofiles
 import concurrent.futures
 
 import sys

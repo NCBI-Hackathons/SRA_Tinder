@@ -7,7 +7,7 @@ import re
 VERSION = 1.0
 
 
-class sra_tinder:
+class sra_tinder_web:
 
 
     def __init__(self, sra_file_name):
