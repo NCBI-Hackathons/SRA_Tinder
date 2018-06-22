@@ -3,6 +3,56 @@
 import argparse
 import SRA_Tinder
 
+import sra_tinder 
+import trimandcount
+import subprocess
+import sys
+import pandas
+import asyncio
+
+
+def generate_acc_statistics(fastqfile):
+    '''
+    Generates statistics from a fastq file generated from
+    an SRA accession
+
+    Parameters
+    ----------
+    fastqfile : str (pathlike)
+        A path the the raw FASTQ file
+
+    Returns
+    -------
+    a pd dataframe containing statistcs
+
+    '''
+    titleline = [
+        "Accession", "mean quality score", "most abundent organism", 
+        "percent abundence", "number of organims greater than 1% abundence", 
+        "totalreads", "withadapter", "mean_readlen", "std_readlen", 
+        "readlen_trimmed", "std_readlen_trimmed"
+    ]
+    accession = acc
+    # Get some data about the SRA ACC from the web
+    my_tinder = sra_tinder.sra_tinder_web(accession)
+    i = my_tinder.scrape_qc()
+    iii = my_tinder.scrape_organisms()
+    # Get some data from trimmed data
+    totalreads, withadapter, mean_readlen, \
+    std_readlen, readlen_trimmed, \
+    std_readlen_trimmed = trimandcount.basesleftaftertriming(fastqfile)
+    # Generate a list of the info
+    listofinfo = [accession, str(i), iii[0], iii[1], iii[2], totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed]
+    # Generate the resultant Pandas frame and create output
+    df = pandas.DataFrame.from_records(listofinfo, columns=titleline)
+    return listofinfo
+
+
+# Event Loops
+
+def run_matching_even_loop(args):
+    loop = asyncio.get_event_loop() 
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -17,7 +67,20 @@ if __name__ == '__main__':
     parser.set_defaults(func=lambda x: parser.print_help())
 
     # basic functions go here
-
+    matches = subparsers.add_parser(
+        'match',
+        help='create SRA matches'
+    )
+    matches.add_argument(
+        '-i',
+        help='input file'
+    )
+    matches.add_argument(
+        '-o',
+        help='output file'
+    )
+    matches.set_defaults(func=find_matches)
+    
 
     args = parser.parse_args()
     try:
