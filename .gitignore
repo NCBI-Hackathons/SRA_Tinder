@@ -1,3 +1,9 @@
 *.egg-info
 *.swp
 *__pycache__*
+
+# exclude everything
+SRA_Tinder/temp/*
+
+# exception to the rule
+!SRA_Tinder/temp/.gitkeep
