@@ -38,7 +38,9 @@ setup(
         #'':['*.cyx']    
     },
     install_requires = [		
-        'aiofiles'
+        'aiofiles', 
+	'numpy=1.14.5', 
+	'biopython==1.71'
     ],
     include_package_data=True,
 

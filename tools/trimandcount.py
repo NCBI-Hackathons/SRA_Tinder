@@ -1,8 +1,11 @@
 from Bio import SeqIO
+import numpy 
 import sys
 import glob
 import os
 
+#pip install biopython
+#pip install numpy
 
 def trim_adaptors_drop(records, adaptor, min_len):
     """Trims perfect adaptor sequences, checks read length.
@@ -33,53 +36,54 @@ def trim_adaptors_check(records, adaptor, min_match=6):
     http://biopython.org/DIST/docs/tutorial/Tutorial.html#htoc289
     """
     len_adaptor = len(adaptor) #cache this for later
-    total, withadapter, trimmedbases, totalbases = 0, 0, 0, 0
+    withadapter  = 0
+    trimmedbases, totalbases = [], []
     for record in records:
         len_record = len(record)
-        totalbases = totalbases+len_record
-        total = total+1
+        totalbases.append(len_record)
         index = record.seq.find(adaptor[0:min_match])
-        if index == -1:
-            trimmedbases = trimmedbases+len_record
-        else:
+        if not index == -1:
             withadapter=withadapter+1
-            trimmedbases = trimmedbases+index
-    return total, withadapter, totalbases, trimmedbases
+            trimmedbases.append(index)
+    mean_readlen = numpy.mean(totalbases) 
+    std_readlen = numpy.std(totalbases)
+    readlen_trimmed = numpy.mean(trimmedbases)
+    std_readlen_trimmed =numpy.std(trimmedbases)
+    totalreads = len(totalbases)
+    return totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed
 
 def loopadapters(fastqfile):
-	l, a, tb, trb = [], [], [], []
+	alladapters, readswithadapters = [], []
 	#need to add current path
 	for adapterfile in glob.iglob('adapters/*.fa'):
 		adapters = SeqIO.parse(adapterfile, "fasta")
 		for adapter_record in adapters:
 			original_reads = SeqIO.parse(fastqfile, "fastq")
-			total_reads, trimmed_reads, totalbases, trimmedbases = trim_adaptors_check(original_reads, str(adapter_record.seq))
+			totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed = trim_adaptors_check(original_reads, str(adapter_record.seq))
 			#print (len(trimmed_reads))
 			#count = SeqIO.write(trimmed_reads, "trimmed.fastq", "fastq")
-			l.append(trimmed_reads)
-			a.append(str(adapter_record.seq))
-			tb.append(totalbases)
-			trb.append(trimmedbases)
+			readswithadapters.append(withadapter)
+			alladapters.append([totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed])
 			#print (count, str(adapter_record.seq))
-	bestadapter = [(count, adapter, totalnts, trimednts) for count, adapter,totalnts, trimednts in zip(l, a, tb, trb) if count==max(l)]
-	return bestadapter
+	bestadapters = [(totalreads,withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed) for totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed in alladapters if withadapter==max(readswithadapters)] 
+	return bestadapters
 
 
-def outputtrimedadapterfastqfile(fastqfile, outfastqfile):
-	m = loopadapters(fastqfile)
+def outputtrimedadapterfastqfile(fastqfile, outfastqfile, adpater):
 	original_reads = SeqIO.parse(fastqfile, "fastq")
-	countreadswithadapter, adapter, totalntsinfastq, trimedntsinfastq = m[0]
 	trimmed_reads = trim_adaptors_drop(original_reads, adpater, 0)
-	count = SeqIO.write(trimmed_reads, outfastqfile, "fastq")
-	
+	#if you want to write the trimed reads used this
+	#count = SeqIO.write(trimmed_reads, outfastqfile, "fastq")
+	return trimmed_reads
 
 def basesleftaftertriming(fastqfile):
 	m = loopadapters(fastqfile)
-	countreadswithadapter, adapter, totalntsinfastq, trimedntsinfastq = m[0]	
-	return countreadswithadapter, adapter, totalntsinfastq, trimedntsinfastq
+	totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed = m[0]	
+	return totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed
 
 if __name__=="__main__":
 	fastqfile = sys.argv[1]
-	countreadswithadapter, adapter, totalntsinfastq, trimedntsinfastq = basesleftaftertriming(fastqfile)
-	print (countreadswithadapter, adapter, totalntsinfastq, trimedntsinfastq)
+	totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed = basesleftaftertriming(fastqfile)
+	print ("totalreads", "withadapter", "mean_readlen", "std_readlen", "readlen_trimmed", "std_readlen_trimmed")
+	print (totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed)
 	#if you want to output a trimmed file run outputtrimedadapterfastqfile
