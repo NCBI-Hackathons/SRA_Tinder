@@ -1,6 +1,14 @@
-# EZData
+# SRA_Tinder
+![logo](/docs/logo.png)
 
-A package to onboard data from disparate datasets into common pipelines without file transfer
+Get a constant stream of high quality reads from the SRA matched just for you!
+
+Have you ever been on SRA, downloaded data and then decided it just wasn't going to work? That's like going on a blind date with someone you have no interest in. Its a huge waste of your time! 
+
+![Nope](/docs/nope.jpg)
+
+Here we introduct SRA_tinder, the package that allows you to preview your fastq files before you date them. Go ahead, swipe left. Don't date that ugly data! Or Swipe right and find the love of your data life. 
+
 
 ## Installation
 Installation is a three step process:
@@ -23,25 +31,3 @@ $ python setup.py install
 ```
 
 
-## Example usage
-
-    ./process.sh ERR612477
-
-
-Example usage for bulk processing
-
-
-    while read i; do ./process.sh  $i; done < SraAccessionsTest.txt > table.txt
-
-This will then create the bulk processing of the first 1000 reads of all runs listed in SraAccessionsTest.txt and output summary stats to table.txt of mean base quality score over all bases
-
-
-## Note
-
-Uses readfq.py from https://github.com/lh3/readfq
-
-## Prerequisites
-
-Install sra-toolkit and make sure fastq-dump is in your $PATH https://github.com/ncbi/sra-tools
-
-Also install fastqc to the command line (if you have homebrew, use `brew install fastqc`)
