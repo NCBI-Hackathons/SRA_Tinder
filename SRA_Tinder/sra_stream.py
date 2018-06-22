@@ -1,6 +1,7 @@
 import asyncio
 import os
 import aiofiles
+import concurrent.futures
 
 import sys
 import traceback
@@ -11,64 +12,52 @@ from ngs.ReadCollection import ReadCollection
 from ngs.Read import Read
 from ngs.ReadIterator import ReadIterator
 
-def run(acc, splitNum=1, splitNo=1):
-    '''
-    This is a blocking task, it needs to be run in an executor
-    '''
-    # open requested accession using SRA implementation of the API
-    with NGS.openReadCollection(acc) as run:
-        run_name = run.getName()
-
-        # compute window to iterate through
-        MAX_ROW = run.getReadCount()
-        chunk = MAX_ROW/splitNum
-        first = int(round(chunk*(splitNo-1)))
-        next_first = int(round(chunk*(splitNo)))
-        if next_first > MAX_ROW:
-            next_first = MAX_ROW
-
-        # start iterator on reads
-        with run.getReadRange(first+1, next_first-first, Read.all) as it:
-            i = 0
-            while it.nextRead():
-                i += 1
-                if i > 20000: 
-                    break
-                while it.nextFragment():
-                    bases = it.getFragmentBases()
-                    qualities=it.getFragmentQualities()
-                    ids=it.getFragmentId()
-                    if bases:
-                        read = f'@{ids}\n{bases}\n+\n{qualities}\n'
-                        return read
-                        #print ("\t{} - {}".format(bases, "aligned" if it.isAligned() else "unaligned"))
-                        #print ('@'+ids) 
-                        #print (bases)
-                        #print ('+'+ids)
-                        #print (qualities)
-                        #print ("\n")
-            #print ("Read {} spots for {}".format(i,  run_name))
-
 class SRA_Stream():
 
     def __init__(self):
         pass
 
-    async def pipe_reads(self,acc,loop):
-        #loop = asyncio.get_event_loop()
-        async with aiofiles.open(acc,mode='w') as pipe:
-            future = loop.run_in_executor(None, run, acc)
-            data = await future 
-            await pipe.write(str(data))
-        return None
+    def stream_reads(self, foo, splitNum=1, splitNo=1):
+        '''
+        This is a blocking task, it needs to be run in an executor
+        '''
 
-    def run(self,runs):
+        # open requested accession using SRA implementation of the API
+        pipe = open(foo, 'w')        
+        with NGS.openReadCollection(foo) as run:
+            run_name = run.getName()
+
+            # compute window to iterate through
+            MAX_ROW = run.getReadCount()
+            chunk = MAX_ROW/splitNum
+            first = int(round(chunk*(splitNo-1)))
+            next_first = int(round(chunk*(splitNo)))
+            if next_first > MAX_ROW:
+                next_first = MAX_ROW
+
+            # start iterator on reads
+            with run.getReadRange(first+1, next_first-first, Read.all) as it:
+                i = 0
+                while it.nextRead():
+                    i += 1
+                    if i > 20000: 
+                        break
+                    while it.nextFragment():
+                        bases = it.getFragmentBases()
+                        qualities=it.getFragmentQualities()
+                        ids=it.getFragmentId()
+                        if bases:
+                            read = f'@{ids}\n{bases}\n+\n{qualities}\n'
+                            print(read,file=pipe)
+        os.unlink(foo)
+
+    def run(self,accs):
         '''
         Stream SRA files into named pipes 
 
         Parameters
         ----------
-        runs: an iterable of Run (str) names
+        accs: an iterable of Run (str) names
 
         Output
         ------
@@ -76,13 +65,16 @@ class SRA_Stream():
         '''
         loop = asyncio.get_event_loop()
         tasks = []
-        for run in runs:
+        pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
+        for acc in accs:
+            print(f'Streaming {acc}', file=sys.stderr)
             try:
-                os.unlink(run)
+                os.unlink(acc)
             except FileNotFoundError as e:
                 pass
-            os.mkfifo(run)
-            tasks.append(self.pipe_reads(run,loop))
+            os.mkfifo(acc)
+            future = loop.run_in_executor(pool, self.stream_reads, acc)
+            tasks.append(future)
         results = asyncio.gather(*tasks)
         loop.run_until_complete(results)
         return results
@@ -90,4 +82,13 @@ class SRA_Stream():
 
 if __name__ == '__main__':
     x = SRA_Stream()
-    x.run(['SRR020192'])
+    test_sets = ['SRR1105736',
+        'SRR1105737',
+        'SRR1105738',
+        'SRR1105739',
+        'SRR1105740',
+        'SRR1105741',
+        'SRR1224573',
+        'SRR1224574'
+    ]
+    x.run(test_sets)
