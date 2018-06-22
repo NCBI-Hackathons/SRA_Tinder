@@ -1,5 +1,6 @@
-# SRATinder
+# SRA_Tinder
 ![logo](/docs/logo.png)
+
 Get a constant stream of high quality reads from the SRA that matches you!
 A package to onboard data from disparate datasets into common pipelines without file transfer
 
