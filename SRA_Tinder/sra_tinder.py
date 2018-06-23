@@ -48,7 +48,7 @@ class sra_tinder_web:
     #     return ret
 
 
-    def scrape_run(self):
+    def scrape_run(self, essential=True):
         """
         Scrapes the URL metadata page for the run accession
         :return: a float rounded to two decimal places representing the average quality score of a SRA run
@@ -117,33 +117,75 @@ class sra_tinder_web:
         project = project[0]
         project_string = ur.urlopen("https://www.ncbi.nlm.nih.gov/bioproject/{}".format(project)).read().decode()
         taxonomy_id = re.findall('<td class="CTtitle">Organism</td><td class="CTcontent"><a href=".*?" class="RegularLinkB" title=\"(.*?)\"', project_string, re.DOTALL)
-        publications = re.findall('<td class="CTtitle">Publications</td><td class="CTcontent">(.*?)Publications</td></tr><tr><td>', project_string, re.DOTALL)
-        pmids = re.findall('href=\"/pubmed/(.*?)\"', publications[0], re.DOTALL)
-        print(pmids, taxonomy_id)
-        pmids = ['https://www.ncbi.nlm.nih.gov/pubmed/?term={}'.format(x) for x in pmids]
+        try:
+            publications = re.findall('<td class="CTtitle">Publications</td><td class="CTcontent">(.*?)Publications</td></tr><tr><td>', project_string, re.DOTALL)
+            pmids = re.findall('href=\"/pubmed/(.*?)\"', publications[0], re.DOTALL)
+            pmids = ['https://www.ncbi.nlm.nih.gov/pubmed/?term={}'.format(x) for x in pmids]
 
-        ret['pmids'] = pmids
-        ret['taxon_id'] = taxonomy_id
+            ret['pmids'] = pmids
+            ret['taxon_id'] = taxonomy_id
+        except:
+            ret['pmids'] = 'None'
+            ret['taxon_id'] = 'None'
 
         return ret
 
-my_tinder = sra_tinder_web('SRR3403834').scrape_run()
+# my_tinder = sra_tinder_web('SRR3403834').scrape_run()
 #testing cases, please ignore
 # x = sra_tinder('SRR3403834').scrape_organisms()
 # print(x)
 
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser(description='')
-#     parser.add_argument('-i', '--input', help='Input File', required=True)
-#     parser.add_argument('-e', '--essential', help='Run with only the essential fields (accession, average_qual_Score, pass/fail, top_organism, top_organism%, #_organisms >1%, USER_SUBMITTED_Type', action='store_true')
-#
-#
-#
-#     try:
-#         args = parser.parse_args()
-#     except:
-#         parser.print_help()
-#         sys.exit(1)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('-i', '--input', help='Input File', required=True)
+    parser.add_argument('-e', '--essential', help='Run with only the essential fields (accession, average_qual_Score, pass/fail, top_organism, top_organism%, #_organisms >1%, USER_SUBMITTED_Type', action='store_true')
+
+
+
+    try:
+        args = parser.parse_args()
+    except:
+        parser.print_help()
+        sys.exit(1)
+
+    with open(args.input, 'r') as infile:
+        if args.essential:
+            titleline = [
+                "Accession", "Percent_Quality_Scores_above_30", "Pass_or_Fail_70%_Q30", "most_abundent_organism",
+                "percent_abundence", "number_of_organims_greater_than_1%_abundence",
+                "USER_LABELED_data_type(may_be_incorrect)"]
+        else:
+            titleline = [
+                "Run Accession", "Study", "Percent Quality Scores above 30", "Pass or Fail 70% Q30",
+                "mean_quality_score", "most_abundent_organism",
+                "percent_abundence", "number_of_organims_greater_than_1%_abundence", "Taxon_Orgs" "*Source",
+                "*Strategy", "*Selection", "*Layout", "URL", "PUBMED"
+                                                             "total_reads_checked", "total_reads_withadapter",
+                "mean_readlen_before_trim", "std_readlen_before_trim",
+                "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
+            ]
+        sys.stdout.write('\t'.join(titleline))
+        for line in infile:
+            my_tinder = sra_tinder_web(line.strip())
+            run_info = my_tinder.scrape_run()
+            m = {True: 'Pass', False: 'Fail'}
+            final_output_line = []
+            url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(line)
+
+            if not args.essential:
+
+
+                final_output_line += [line, run_info['study'], run_info['%q30'], m[(run_info['%q30'] > 70)],
+                                      run_info['mean_qual'], run_info['top_org'], run_info['top_org_%'],
+                                      run_info['#_1%_orgs'], run_info['taxon_id'], run_info['source'],
+                                      run_info['strategy'], run_info['selection'], run_info['layout'], url,
+                                      run_info['pmids']]
+            else:
+
+                final_output_line += [line, run_info['%q30'], m[(run_info['%q30'] > 70)], run_info['top_org'],
+                                      run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source']]
+            final_output_line = [str(x) for x in final_output_line] + ['\n']
+            sys.stdout.write('\t'.join(final_output_line))
 
 
 
