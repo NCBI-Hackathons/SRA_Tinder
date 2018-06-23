@@ -1,5 +1,5 @@
 # *Find hot data sets in your area (of research)!*
-![logo](/docs/SRA_Tinder_logo_larger_text_small.png)|![logo](/docs/logo.png)
+![logo](/docs/SRA_Tinder_logo_larger_text_small.png) ![logo](/docs/logo.png)
 
 
 Have you ever spent weeks interacting with SRA data and then decided it just wasn't going to work? That's like going on a blind date with someone you have no interest in. It's a huge waste of your time!
