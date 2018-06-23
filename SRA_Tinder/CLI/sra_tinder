@@ -17,7 +17,7 @@ import pandas
 import asyncio
 
 
-async def generate_acc_statistics(fastqfile,event=None):
+def generate_acc_statistics(fastqfile):
     '''
     Generates statistics from a fastq file generated from
     an SRA accession
@@ -32,47 +32,42 @@ async def generate_acc_statistics(fastqfile,event=None):
     a pandas dataframe containing statistcs
 
     '''
-    # Wait for the pipe to start to be filled
-    if event is not None:
-        await event.wait()
-    def do_stats(fastqfile):
-        print(f'Generating stats for {fastqfile}')
-        with open(fastqfile) as IN:
-            i = 0
-            for _ in IN:
-                i+=1
-                if i % 1000:
-                    print(f'counted {i} lines for {fastqfile}')
-            print(i)
-        return
-        # Do stuff
-        titleline = [
-            "Accession", "mean_quality_score", "most_abundent_organism",
-            "percent_abundence", "number_of_organims_greater_than_1%_abundence",
-            "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
-            "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
-        ]
-        accession = fastqfile.replace('.fastq','')
-        # Get some data about the SRA ACC from the web
-        my_tinder = sra_tinder.sra_tinder_web(accession)
-        i = my_tinder.scrape_qc()
-        iii = my_tinder.scrape_organisms()
-        # Get some data from trimmed data
-        print (fastqfile)
-        totalreads, withadapter, mean_readlen, \
-        std_readlen, readlen_trimmed, \
-        std_readlen_trimmed = trimandcount.basesleftaftertriming(fastqfile)
-        # Generate a list of the info
-        listofinfo = [accession, str(i), iii[0], iii[1], iii[2], totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed]
-        # Generate the resultant Pandas frame and create output
-        df = pandas.DataFrame.from_records(listofinfo, columns=titleline)
-        return listofinfo
-    await asyncio.get_event_loop().run_in_executor(None,do_stats,fastqfile) 
-
+    print(f'Generating stats for {fastqfile}')
+    titleline = [
+        "Accession", "mean_quality_score", "most_abundent_organism",
+        "percent_abundence", "number_of_organims_greater_than_1%_abundence",
+        "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
+        "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
+    ]
+    final_output_line = []
+    accession = fastqfile.replace('.fastq','')
+    url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(accession)
+    # Get some data about the SRA ACC from the web
+    my_tinder = sra_tinder.sra_tinder_web(accession)
+    run_info = my_tinder.scrape_run()
+    m = {True: 'Pass', False: 'Fail'}
+    if args.full:
+        final_output_line += [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
+    else:
+        final_output_line += [run_info['%q30'], m[(run_info['%q30']>70)], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source']]
+    # Get some data from trimmed data
+    totalreads, withadapter, mean_readlen, \
+    std_readlen, readlen_trimmed, \
+    std_readlen_trimmed = trimandcount.basesleftaftertriming(fastqfile)
+    # Generate a list of the info
+    final_output_line += [totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed]
+    # Generate the resultant Pandas frame and create output
+    final_output_line = [str(x) for x in final_output_line]
+    df = pandas.DataFrame.from_records(final_output_line, columns=titleline)
+    return final_output_line
 
 # Event Loops
 def run_matching_event_loop(args):
-    # Create some base objects
+    """
+    :param args:
+    :return:
+    """
+    streamer = SRA_Stream()
     loop = asyncio.get_event_loop()
     pool = concurrent.futures.ProcessPoolExecutor(max_workers=100)
     # Create a task list
@@ -156,8 +151,13 @@ if __name__ == '__main__':
         '-o',
         help='output file'
     )
+    matches.add_argument(
+        '--full',
+        help='output LOTS of data - can be overwhelming if you are new to this'
+    )
     matches.set_defaults(func=run_matching_event_loop)
-
+    
+    # Parse and run
     args = parser.parse_args()
     try:
         args.func(args)    
