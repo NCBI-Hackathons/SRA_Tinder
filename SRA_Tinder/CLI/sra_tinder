@@ -31,10 +31,10 @@ def generate_acc_statistics(fastqfile):
     '''
     print(f'Generating stats for {fastqfile}')
     titleline = [
-        "Accession", "mean quality score", "most abundent organism", 
-        "percent abundence", "number of organims greater than 1% abundence", 
-        "totalreads", "withadapter", "mean_readlen", "std_readlen", 
-        "readlen_trimmed", "std_readlen_trimmed"
+        "Accession", "mean_quality_score", "most_abundent_organism",
+        "percent_abundence", "number_of_organims_greater_than_1%_abundence",
+        "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
+        "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
     ]
     accession = fastqfile.replace('.fastq','')
     # Get some data about the SRA ACC from the web
