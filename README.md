@@ -11,6 +11,10 @@ Our goal is to show you only the most essential information about your SRA data 
 
 ![alpha_output_example_1](/docs/alpha_output_example_1.png)
 
+## Dependencies
+Requires python 3.6
+Requires setuptools (https://pip.pypa.io/en/stable/installing/)
+
 ## Installation
 Installation is a three step process:
 ### Step 1:
@@ -32,20 +36,22 @@ $ python setup.py install
 ```
 
 
-Input is a SRRnumber list from runselector, output is a tab delemted table.
+Input is a SRR number list from runselector, output is a tab delemted table.
 
 python sra_tinder_matches.py SRA_Acc_list.txt
 
 For example you can test the code using this
-### Step 3:
+
+### Usage:
 ```
 $ python sra_tinder_matches.py tests/SRA_Acc_list.txt
 ```
-To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a SRNA project number and click Accession List. 
+To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a Bioproject number, go to the run selector, and click Accession List. 
 
+### Example run:  
 
-# Streach goals
-- add the ngs code instead of scraping the web. This means we don't break when SRA changers there webstie, and we could easily take in fastq files instead of SRA accesssions.
+# Stretch goals
+- add the ngs code instead of scraping the web. This means we don't break when SRA changers there website, and we could easily take in fastq files instead of SRA accesssions.
 - graph summerize the output table
 - add in the search SRA and get a massive accesion list auto lookup
 

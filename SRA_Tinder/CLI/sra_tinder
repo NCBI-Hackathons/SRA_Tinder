@@ -2,6 +2,79 @@
 
 import argparse
 import SRA_Tinder
+import concurrent.futures
+
+from SRA_Tinder import sra_tinder
+from SRA_Tinder.sra_stream import SRA_Stream
+
+import SRA_Tinder.trimandcount as trimandcount
+import subprocess
+import sys
+import pandas
+import asyncio
+
+
+def generate_acc_statistics(fastqfile):
+    '''
+    Generates statistics from a fastq file generated from
+    an SRA accession
+
+    Parameters
+    ----------
+    fastqfile : str (pathlike)
+        A path the the raw FASTQ file
+
+    Returns
+    -------
+    a pd dataframe containing statistcs
+
+    '''
+    print(f'Generating stats for {fastqfile}')
+    titleline = [
+        "Accession", "mean_quality_score", "most_abundent_organism",
+        "percent_abundence", "number_of_organims_greater_than_1%_abundence",
+        "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
+        "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
+    ]
+    accession = fastqfile.replace('.fastq','')
+    # Get some data about the SRA ACC from the web
+    my_tinder = sra_tinder.sra_tinder_web(accession)
+    i = my_tinder.scrape_qc()
+    iii = my_tinder.scrape_organisms()
+    # Get some data from trimmed data
+    print (fastqfile)
+    totalreads, withadapter, mean_readlen, \
+    std_readlen, readlen_trimmed, \
+    std_readlen_trimmed = trimandcount.basesleftaftertriming(fastqfile)
+    # Generate a list of the info
+    listofinfo = [accession, str(i), iii[0], iii[1], iii[2], totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed]
+    # Generate the resultant Pandas frame and create output
+    df = pandas.DataFrame.from_records(listofinfo, columns=titleline)
+    return listofinfo
+
+# Event Loops
+def run_matching_event_loop(args):
+    streamer = SRA_Stream()
+    loop = asyncio.get_event_loop()
+    # Create a process pool
+    pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
+    # Create a task list
+    tasks = []
+    # Process Input File
+    with open(args.input) as IN:
+        for acc in IN:
+            # Each line is an SRR accession
+            acc = acc.strip()
+            # Create a task for streaming
+            future = streamer.stream(acc,pool=pool)
+            tasks.append(future)
+            # Create a task for doing stats
+            pipe_path = streamer.get_pipe(acc)
+            future = loop.run_in_executor(pool, generate_acc_statistics, pipe_path)
+            tasks.append(future)
+    results = asyncio.gather(*tasks)
+    loop.run_until_complete(results)
+    return results
 
 
 if __name__ == '__main__':
@@ -15,9 +88,26 @@ if __name__ == '__main__':
         ])    
     )
     parser.set_defaults(func=lambda x: parser.print_help())
+    subparsers = parser.add_subparsers(
+        title='Command Line Programs',
+        metavar="Available Commands",
+        description='Use --help with each command for more info'
+    )
 
     # basic functions go here
-
+    matches = subparsers.add_parser(
+        'match',
+        help='create SRA matches'
+    )
+    matches.add_argument(
+        '--input',
+        help='input file'
+    )
+    matches.add_argument(
+        '-o',
+        help='output file'
+    )
+    matches.set_defaults(func=run_matching_event_loop)
 
     args = parser.parse_args()
     try:

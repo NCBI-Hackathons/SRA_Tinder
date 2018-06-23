@@ -7,7 +7,7 @@ import re
 VERSION = 1.0
 
 
-class sra_tinder:
+class sra_tinder_web:
 
 
     def __init__(self, sra_file_name):
@@ -114,7 +114,8 @@ if __name__ == '__main__':
     accession = args.input
     url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(accession)
 
-    my_tinder = sra_tinder(accession)
+    my_tinder = sra_tinder_web(accession)
+
     run_info = my_tinder.scrape_run()
     org_info = my_tinder.scrape_organisms()
 
@@ -126,3 +127,5 @@ if __name__ == '__main__':
         output = [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
     output = [str(x) for x in output]
     sys.stdout.write('\t'.join(output))
+
+

@@ -40,7 +40,9 @@ setup(
     },
     install_requires = [		
 	    'numpy==1.14.5', 
-	    'biopython==1.71'
+	    'biopython==1.71',
+        'pandas==0.23.1', 
+        'plotly==2.7.0'
     ],
     include_package_data=True,
 
