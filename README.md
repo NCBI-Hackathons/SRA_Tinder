@@ -51,6 +51,17 @@ To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study
 
 ### Example run:  
 
+
+### Implementation
+
+SRA Tinder is implemented through three primary functions:
+
+Streaming:
+
+Trimming/Counting:
+
+Scraping:
+
 # Stretch goals
 - add the ngs code instead of scraping the web. This means we don't break when SRA changers there website, and we could easily take in fastq files instead of SRA accesssions.
 - graph summerize the output table
