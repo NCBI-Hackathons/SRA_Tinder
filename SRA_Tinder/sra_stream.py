@@ -10,20 +10,22 @@ from ngs.ErrorMsg import ErrorMsg
 from ngs.ReadCollection import ReadCollection
 from ngs.Read import Read
 from ngs.ReadIterator import ReadIterator
+from functools import partial
 
 class SRA_Stream():
 
     def __init__(self):
         pass
 
-    def stream_reads(self, acc, splitNum=1, splitNo=1):
+    def stream_reads(self, acc, event, splitNum=1, splitNo=1):
         '''
         This is a blocking task, it needs to be run in an executor
         '''
-
         # open requested accession using SRA implementation of the API
+        print(f'Streaming {acc}', file=sys.stderr)
         pipe_path = self.get_pipe(acc)
         pipe = open(pipe_path, 'w')        
+        event.clear()
         with NGS.openReadCollection(acc) as run:
             run_name = run.getName()
             # compute window to iterate through
@@ -48,6 +50,7 @@ class SRA_Stream():
                             read = f'@{ids}\n{bases}\n+\n{qualities}'
                             print(read,file=pipe)
         os.unlink(pipe_path)
+        print(f'Done streaming for {acc}')
         return None
 
     def _create_pipe(self,acc):
@@ -73,7 +76,7 @@ class SRA_Stream():
             acc = acc + '.fastq'
         return acc
 
-    def stream(self,acc, pool=None):
+    async def stream(self,acc,pool=None,event=None):
         '''
         Stream SRA files into named pipes 
 
@@ -85,13 +88,10 @@ class SRA_Stream():
         ------
         A future containing s
         '''
-        print(f'Streaming {acc}', file=sys.stderr)
-        if pool is None:
-            pool = concurrent.futures.ProcessPoolExecutor()
-        self._create_pipe(acc)
         loop = asyncio.get_event_loop()
-        future = loop.run_in_executor(pool, self.stream_reads, acc)
-        return future
+        self._create_pipe(acc)
+        cb = partial(self.stream_reads,acc,event=event)
+        await loop.run_in_executor(pool, cb)
 
 
 if __name__ == '__main__':

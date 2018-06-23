@@ -77,12 +77,6 @@ def outputtrimedadapterfastqfile(fastqfile, outfastqfile, adpater):
 	return trimmed_reads
 
 def basesleftaftertriming(fastqfile):
-    with open(fastqfile) as IN:
-        i = 0
-        for line in IN:
-            i+=1
-        print(i)
-    return
     m = loopadapters(fastqfile)
     print(m)
     totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed = m[0]	
