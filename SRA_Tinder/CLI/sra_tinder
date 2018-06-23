@@ -42,12 +42,11 @@ def generate_acc_statistics(fastqfile):
     # Get some data about the SRA ACC from the web
     my_tinder = sra_tinder.sra_tinder_web(accession)
     run_info = my_tinder.scrape_run()
-    org_info = my_tinder.scrape_organisms()
     m = {True: 'Pass', False: 'Fail'}
     if args.full:
-        final_output_line += [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
+        final_output_line += [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
     else:
-        final_output_line += [run_info['%q30'], m[(run_info['%q30']>70)], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source']]
+        final_output_line += [run_info['%q30'], m[(run_info['%q30']>70)], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source']]
     # Get some data from trimmed data
     totalreads, withadapter, mean_readlen, \
     std_readlen, readlen_trimmed, \
