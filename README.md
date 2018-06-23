@@ -1,5 +1,5 @@
 # *Find hot data sets in your area (of research)!*
-![logo](/docs/logo.png)
+![logo](/docs/SRA_Tinder_logo_larger_text.png) ![logo](/docs/logo.png)
 
 
 Have you ever spent weeks interacting with SRA data and then decided it just wasn't going to work? That's like going on a blind date with someone you have no interest in. It's a huge waste of your time!
@@ -13,6 +13,7 @@ Our goal is to show you only the most essential information about your SRA data 
 
 ## Dependencies
 Requires python 3.6
+
 Requires setuptools (https://pip.pypa.io/en/stable/installing/)
 
 ## Installation
