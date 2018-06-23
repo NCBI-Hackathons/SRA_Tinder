@@ -1,0 +1,18 @@
+Run Accession	Study	Percent Quality Scores above 30	Pass or Fail 70% Q30	mean_quality_score	most_abundent_organism	percent_abundence	number_of_organims_greater_than_1%_abundence	Taxon_Orgs	*Source	*Strategy	*Selection	*Layout	URL	PUBMED	
+SRR3403834	SRP073516	89.0	Pass	35.57	unculturedcrAssphage	37.2	16	human gut metagenome in Taxonomy	METAGENOMIC	AMPLICON	PCR	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR3403834	['https://www.ncbi.nlm.nih.gov/pubmed/?term=27025251']	
+SRR7280791	SRP150069	91.0	Pass	34.96	Bifidobacteriumadolescentis	10.9	72	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280791	None	
+SRR7280792	SRP150069	91.0	Pass	34.97	Bifidobacteriumadolescentis	14.6	89	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280792	None	
+SRR7280793	SRP150069	89.0	Pass	34.79	Bacteroides	11.6	101	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280793	None	
+SRR7280794	SRP150069	91.0	Pass	35.02	Bacteroides	9.0	88	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280794	None	
+SRR7280795	SRP150069	90.0	Pass	34.73	Actinomycesurogenitalis	52.7	39	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280795	None	
+SRR7280796	SRP150069	70.0	Fail	29.18	Bacteria	66.4	1	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280796	None	
+SRR7280797	SRP150069	90.0	Pass	34.75	Bifidobacteriumbreve	75.0	28	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280797	None	
+SRR7280798	SRP150069	90.0	Pass	34.84	Actinomyces	38.5	42	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280798	None	
+SRR7280799	SRP150069	89.0	Pass	34.68	Bifidobacteriumadolescentis	10.9	83	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280799	None	
+SRR7280800	SRP150069	89.0	Pass	34.68	Bifidobacteriumbreve	69.2	32	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280800	None	
+SRR7280801	SRP150069	90.0	Pass	34.74	Escherichiacoli	68.5	17	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280801	None	
+SRR7280802	SRP150069	91.0	Pass	35.07	Bacteroides	66.9	44	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280802	None	
+SRR7280803	SRP150069	88.0	Pass	34.42	Escherichiacoli	24.1	8	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280803	None	
+SRR7280804	SRP150069	90.0	Pass	34.89	Escherichiacoli	43.9	71	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280804	None	
+SRR7280805	SRP150069	90.0	Pass	34.78	Escherichiacoli	64.9	51	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280805	None	
+SRR7280806	SRP150069	90.0	Pass	34.77	Klebsiellaaerogenes	64.0	26	None	METAGENOMIC	WGS	RANDOM	PAIRED	https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR7280806	None	

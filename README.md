@@ -102,7 +102,11 @@ pipe in the current directory and stream reads to those files as needed.
 
 ### Example run:  
 To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a Bioproject number, go to the run selector, and click Accession List.
-
+### Ongoing work:
+The full vision of this project is to have an abundance of metadata for SRA datasets *that is derived from only the reads present in the sample* and not the user submitted metadata.
+It was our goal to implement a random forest model capable of classifying ~10 types of DNA and RNA data based on the reads present
+(similar to what has already been done with PARTIE - https://github.com/linsalrob/partie).
+While that specific goal was beyond the scope of this hackathon project, the purpose and promise of such a project will likely ensure that it is done in the future.
 
 
 
