@@ -30,12 +30,7 @@ def generate_acc_statistics(fastqfile):
 
     '''
     print(f'Generating stats for {fastqfile}')
-    titleline = [
-        "Accession", "mean_quality_score", "most_abundent_organism",
-        "percent_abundence", "number_of_organims_greater_than_1%_abundence",
-        "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
-        "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
-    ]
+
     final_output_line = []
     accession = fastqfile.replace('.fastq','')
     url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(accession)
@@ -44,9 +39,18 @@ def generate_acc_statistics(fastqfile):
     run_info = my_tinder.scrape_run()
     m = {True: 'Pass', False: 'Fail'}
     if args.full:
-        final_output_line += [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
+        titleline = [
+            "Run Accession", "Study", "Percent Quality Scores above 30", "Pass or Fail 70% Q30", "mean_quality_score", "most_abundent_organism",
+            "percent_abundence", "number_of_organims_greater_than_1%_abundence", "Taxon_Orgs" "*Source", "*Strategy", "*Selection", "*Layout", "URL", "PUBMED"
+            "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
+            "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
+        ]
+        final_output_line += [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['taxon_id'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url, run_info['pmids']]
     else:
-        final_output_line += [run_info['%q30'], m[(run_info['%q30']>70)], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source']]
+        titleline = [
+            "Accession", "Percent_Quality_Scores_above_30", "Pass_or_Fail_70%_Q30", "most_abundent_organism",
+            "percent_abundence", "number_of_organims_greater_than_1%_abundence", "USER_LABELED_data_type(may_be_incorrect)"]
+        final_output_line += [accession, run_info['%q30'], m[(run_info['%q30']>70)], run_info['top_org'], run_info['top_org_%'], run_info['#_1%_orgs'], run_info['source']]
     # Get some data from trimmed data
     totalreads, withadapter, mean_readlen, \
     std_readlen, readlen_trimmed, \
