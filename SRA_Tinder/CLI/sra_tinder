@@ -36,24 +36,36 @@ def generate_acc_statistics(fastqfile):
         "total_reads_checked", "total_reads_withadapter", "mean_readlen_before_trim", "std_readlen_before_trim",
         "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
     ]
+    final_output_line = []
     accession = fastqfile.replace('.fastq','')
+    url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(accession)
     # Get some data about the SRA ACC from the web
     my_tinder = sra_tinder.sra_tinder_web(accession)
-    i = my_tinder.scrape_qc()
-    iii = my_tinder.scrape_organisms()
+    run_info = my_tinder.scrape_run()
+    org_info = my_tinder.scrape_organisms()
+    m = {True: 'Pass', False: 'Fail'}
+    if args.full:
+        final_output_line += [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
+    else:
+        final_output_line += [run_info['%q30'], m[(run_info['%q30']>70)], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source']]
     # Get some data from trimmed data
-    print (fastqfile)
     totalreads, withadapter, mean_readlen, \
     std_readlen, readlen_trimmed, \
     std_readlen_trimmed = trimandcount.basesleftaftertriming(fastqfile)
     # Generate a list of the info
-    listofinfo = [accession, str(i), iii[0], iii[1], iii[2], totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed]
+    final_output_line += [totalreads, withadapter, mean_readlen, std_readlen, readlen_trimmed, std_readlen_trimmed]
     # Generate the resultant Pandas frame and create output
-    df = pandas.DataFrame.from_records(listofinfo, columns=titleline)
-    return listofinfo
+    final_output_line = [str(x) for x in final_output_line]
+    df = pandas.DataFrame.from_records(final_output_line, columns=titleline)
+    return final_output_line
 
 # Event Loops
 def run_matching_event_loop(args):
+    """
+
+    :param args:
+    :return:
+    """
     streamer = SRA_Stream()
     loop = asyncio.get_event_loop()
     # Create a process pool
@@ -107,6 +119,11 @@ if __name__ == '__main__':
         '-o',
         help='output file'
     )
+    matches.add_argument(
+        '--full',
+        help='output LOTS of data - can be overwhelming if you are new to this'
+    )
+
     matches.set_defaults(func=run_matching_event_loop)
 
     args = parser.parse_args()

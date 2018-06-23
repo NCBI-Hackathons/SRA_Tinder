@@ -89,6 +89,11 @@ class sra_tinder_web:
         ret['selection'] = values[4]
         ret['layout'] = values[5]
 
+        #scraping bioproject and pubmed
+        project = re.findall('<a href=\"https://www.nci.nlm.nih.gov/bioproject/(.*?)\">', string, re.DOTALL)[0]
+        project_string = ur.urlopen("https://www.nci.nlm.nih.gov/bioproject/{}".format(project)).read().decode()
+        
+
         return ret
 
 # my_tinder = sra_tinder('SRR3403834').scrape_run()
