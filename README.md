@@ -9,7 +9,21 @@ Have you ever spent weeks interacting with SRA data and then decided it just was
 Here we introduce SRA_Tinder, the package that allows you to preview your fastq files before you date them. Go ahead, swipe left. Don't date that ugly data! Or Swipe right and find the love of your data life.
 Our goal is to show you only the most essential information about your SRA data sets, and let you decide which ones are right for you.
 
-![alpha_output_example_1](/docs/alpha_output_example_1.png)
+## Quick Start (no installation necessary)
+```
+$ git clone https://github.com/NCBI-Hackathons/SRA_Tinder
+$ cd SRA_Tinder
+$ python3 SRA_Tinder/sra_tinder.py --input SraAccList.txt --essential
+```
+![example1](/docs/essential_example.png)
+```
+$ git clone https://github.com/NCBI-Hackathons/SRA_Tinder
+$ cd SRA_Tinder
+$ python3 SRA_Tinder/sra_tinder.py --input SraAccList.txt
+```
+![example2](/docs/full_example.png)
+
+
 
 ## Dependencies
 Requires python 3.6

@@ -126,15 +126,25 @@ if __name__ == '__main__':
         '--full',
         help='output LOTS of data - can be overwhelming if you are new to this'
     )
+    matches.add_argument(
+        '--webonly',
+        help='output LOTS of data - can be overwhelming if you are new to this'
+    )
+
+
 
     matches.set_defaults(func=run_matching_event_loop)
 
     args = parser.parse_args()
     try:
+        if args.webonly:
+            subprocess.run(['python3', '../sra_tinder.py'])
         args.func(args)    
     except Exception as e:
         print(e)
         raise(e)
+
+
 
 
 

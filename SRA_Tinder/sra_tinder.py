@@ -123,17 +123,15 @@ class sra_tinder_web:
             pmids = ['https://www.ncbi.nlm.nih.gov/pubmed/?term={}'.format(x) for x in pmids]
 
             ret['pmids'] = pmids
-            ret['taxon_id'] = taxonomy_id
-        except:
+            ret['taxon_id'] = taxonomy_id[0]
+        except Exception as e:
+            # sys.stderr.write("Error reading PMIDS for {}\n Error is: {}\n".format(self.sra_file_name, str(e)))
             ret['pmids'] = 'None'
             ret['taxon_id'] = 'None'
 
         return ret
 
-# my_tinder = sra_tinder_web('SRR3403834').scrape_run()
-#testing cases, please ignore
-# x = sra_tinder('SRR3403834').scrape_organisms()
-# print(x)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
@@ -158,15 +156,12 @@ if __name__ == '__main__':
             titleline = [
                 "Run Accession", "Study", "Percent Quality Scores above 30", "Pass or Fail 70% Q30",
                 "mean_quality_score", "most_abundent_organism",
-                "percent_abundence", "number_of_organims_greater_than_1%_abundence", "Taxon_Orgs" "*Source",
-                "*Strategy", "*Selection", "*Layout", "URL", "PUBMED"
-                                                             "total_reads_checked", "total_reads_withadapter",
-                "mean_readlen_before_trim", "std_readlen_before_trim",
-                "mean_readlen_of_trimmed_reads", "std_readlen_of_trimmed_reads"
-            ]
-        sys.stdout.write('\t'.join(titleline))
+                "percent_abundence", "number_of_organims_greater_than_1%_abundence", "Taxon_Orgs", "*Source",
+                "*Strategy", "*Selection", "*Layout", "URL", "PUBMED"]
+        sys.stdout.write('\t'.join(titleline + ['\n']))
         for line in infile:
-            my_tinder = sra_tinder_web(line.strip())
+            line = line.strip()
+            my_tinder = sra_tinder_web(line)
             run_info = my_tinder.scrape_run()
             m = {True: 'Pass', False: 'Fail'}
             final_output_line = []
@@ -187,23 +182,3 @@ if __name__ == '__main__':
             final_output_line = [str(x) for x in final_output_line] + ['\n']
             sys.stdout.write('\t'.join(final_output_line))
 
-
-
-    # accession = args.input
-    # url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(accession)
-    #
-    # my_tinder = sra_tinder_web(accession)
-    #
-    # run_info = my_tinder.scrape_run()
-    # org_info = my_tinder.scrape_organisms()
-    #
-    # m = {True: 'Pass', False: 'Fail'}
-    #
-    # if args.essential:
-    #     output = [accession, run_info['%q30'], m[(run_info['%q30']>70)], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source']]
-    # else:
-    #     output = [accession, run_info['study'], run_info['%q30'], m[(run_info['%q30']>70)], run_info['mean_qual'], org_info['top_org'], org_info['top_org_%'], org_info['#_1%_orgs'], run_info['source'], run_info['strategy'], run_info['selection'], run_info['layout'], url]
-    # output = [str(x) for x in output]
-    # sys.stdout.write('\t'.join(output))
-    #
-    #
