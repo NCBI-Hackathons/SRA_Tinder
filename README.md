@@ -11,6 +11,10 @@ Our goal is to show you only the most essential information about your SRA data 
 
 ![alpha_output_example_1](/docs/alpha_output_example_1.png)
 
+## Dependencies
+Requires python 3.6
+Requires setuptools (https://pip.pypa.io/en/stable/installing/)
+
 ## Installation
 Installation is a three step process:
 ### Step 1:
