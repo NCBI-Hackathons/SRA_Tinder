@@ -25,12 +25,12 @@ $ python3 SRA_Tinder/sra_tinder.py --input SraAccList.txt
 
 
 
-## Dependencies
+# Dependencies
 Requires python 3.6
 
 Requires setuptools (https://pip.pypa.io/en/stable/installing/)
 
-## Installation
+# Installation
 Installation is a three step process:
 ### Step 1:
 ```
@@ -57,29 +57,52 @@ python sra_tinder_matches.py SRA_Acc_list.txt
 
 For example you can test the code using this
 
-### Usage:
+# Usage:
+After installation, a command line interface (CLI) will be available through your shell
 ```
-$ python sra_tinder_matches.py tests/SRA_Acc_list.txt
+$ sra_tinder
+usage: sra_tinder [-h] Available Commands ...
+
+Find hot datasets in your area (of research)!
+
+optional arguments:
+  -h, --help          show this help message and exit
+
+Command Line Programs:
+  Use --help with each command for more info
+
+  Available Commands
+    stream            Stream SRA FASTQ files into named pipes
+    match             create SRA matches
+
+version: 0.0.1
+install path: /home/rob/Codes/SRATinder/SRA_Tinder/CLI/sra_tinder
+
 ```
-To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a Bioproject number, go to the run selector, and click Accession List. 
+By default `sra_tinder` comes with 2 built in commands:
+
+1. stream
+2. match
+
+## Streaming
+```
+$ sra_tinder stream -h
+usage: sra_tinder stream [-h] [--input INPUT]
+
+optional arguments:
+  -h, --help     show this help message and exit
+  --input INPUT  input file, one SRR per line
+```
+Streaming takes as input a single file containing SRA Accession numbers (one per line). `sra_tinder` will open a linux named 
+pipe in the current directory and stream reads to those files as needed.
+
+![](docs/stream_demo.gif)
+ 
+ Files can be processed in parallel but streaming will only occur with at most processes as there are processors available.
 
 ### Example run:  
+To get your own SRA_Acc_list.txt go to https://www.ncbi.nlm.nih.gov/Traces/study/ and type in a SRR number or a Bioproject number, go to the run selector, and click Accession List.
 
-
-### Implementation
-
-SRA Tinder is implemented through three primary functions:
-
-Streaming:
-
-Trimming/Counting:
-
-Scraping:
-
-# Stretch goals
-- add the ngs code instead of scraping the web. This means we don't break when SRA changers there website, and we could easily take in fastq files instead of SRA accesssions.
-- graph summerize the output table
-- add in the search SRA and get a massive accesion list auto lookup
 
 
 

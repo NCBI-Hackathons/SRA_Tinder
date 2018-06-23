@@ -3,13 +3,16 @@
 import argparse
 import SRA_Tinder
 import concurrent.futures
+import multiprocessing  
 
 from SRA_Tinder import sra_tinder
 from SRA_Tinder.sra_stream import SRA_Stream
+from functools import partial
 
 import SRA_Tinder.trimandcount as trimandcount
 import subprocess
 import sys
+import os
 import pandas
 import asyncio
 
@@ -26,7 +29,7 @@ def generate_acc_statistics(fastqfile):
 
     Returns
     -------
-    a pd dataframe containing statistcs
+    a pandas dataframe containing statistcs
 
     '''
     print(f'Generating stats for {fastqfile}')
@@ -65,33 +68,48 @@ def generate_acc_statistics(fastqfile):
 # Event Loops
 def run_matching_event_loop(args):
     """
-
     :param args:
     :return:
     """
     streamer = SRA_Stream()
     loop = asyncio.get_event_loop()
-    # Create a process pool
-    pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
+    pool = concurrent.futures.ProcessPoolExecutor(max_workers=100)
     # Create a task list
     tasks = []
+    streamer = SRA_Stream()
     # Process Input File
     with open(args.input) as IN:
         for acc in IN:
             # Each line is an SRR accession
             acc = acc.strip()
+            # Create a condition
+            event = asyncio.Event()
             # Create a task for streaming
-            future = streamer.stream(acc,pool=pool)
-            tasks.append(future)
-            # Create a task for doing stats
+            stream = streamer.stream(acc,event)
             pipe_path = streamer.get_pipe(acc)
-            future = loop.run_in_executor(pool, generate_acc_statistics, pipe_path)
-            tasks.append(future)
+            stats = generate_acc_statistics(pipe_path,event)
+            # Append tasks
+            tasks.append(stream)
+            tasks.append(stats)
     results = asyncio.gather(*tasks)
     loop.run_until_complete(results)
     return results
 
+def run_stream_event_loop(args):
+    loop = asyncio.get_event_loop() 
+    streamer = SRA_Stream()
+    tasks = []
+    accs = [acc.strip() for acc in open(args.input)]
+    pool = concurrent.futures.ProcessPoolExecutor(max_workers=100)
+    for acc in accs:
+        tasks.append(streamer.stream(acc,pool=pool))
+    results = asyncio.gather(*tasks)
+    loop.run_until_complete(results)
+    return results
+            
 
+
+# Main logic to parse args and run the correct event loop
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=(
@@ -99,7 +117,8 @@ if __name__ == '__main__':
         ),        
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="\n".join([
-            f'version: {SRA_Tinder.__version__}' 
+            f'version: {SRA_Tinder.__version__}',
+            f'install path: {__file__}'
         ])    
     )
     parser.set_defaults(func=lambda x: parser.print_help())
@@ -109,7 +128,21 @@ if __name__ == '__main__':
         description='Use --help with each command for more info'
     )
 
-    # basic functions go here
+    # --------------------------------------------------------------
+    # Streaming function -- 
+    # Open a bunch of streamin pipes to SRA files
+    stream = subparsers.add_parser(
+        'stream',
+        help='Stream SRA FASTQ files into named pipes'
+    )
+    stream.add_argument(
+        '--input',
+        help='input file, one SRR per line'
+    )
+    stream.set_defaults(func=run_stream_event_loop)
+
+    # --------------------------------------------------------------
+    # Matching function
     matches = subparsers.add_parser(
         'match',
         help='create SRA matches'
@@ -126,6 +159,7 @@ if __name__ == '__main__':
         '--full',
         help='output LOTS of data - can be overwhelming if you are new to this'
     )
+
     matches.add_argument(
         '--webonly',
         help='output LOTS of data - can be overwhelming if you are new to this'
@@ -134,11 +168,11 @@ if __name__ == '__main__':
 
 
     matches.set_defaults(func=run_matching_event_loop)
-
+    
+    # Parse and run
     args = parser.parse_args()
     try:
-        if args.webonly:
-            subprocess.run(['python3', '../sra_tinder.py'])
+
         args.func(args)    
     except Exception as e:
         print(e)
