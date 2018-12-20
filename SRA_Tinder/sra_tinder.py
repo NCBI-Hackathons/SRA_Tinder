@@ -41,9 +41,15 @@ class sra_tinder_web:
                 output += [values[1], float(values[3])]
         output += [count_organisms]
 
-        ret['top_org'] = output[0]
-        ret['top_org_%'] = output[1]
-        ret['#_1%_orgs'] = output[2]
+
+        try:
+            ret['top_org'] = output[0]
+            ret['top_org_%'] = output[1]
+            ret['#_1%_orgs'] = output[2]
+        except:
+            ret['top_org'] = "None"
+            ret['top_org_%'] = "None"
+            ret['#_1%_orgs'] = "None"
 
         #scrape and count qc data for reads
         table = re.findall('<table class="zebra run-metatable">.*?<div class="center">Phred quality score<\/div>', string, re.DOTALL)
