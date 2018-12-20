@@ -13,39 +13,7 @@ class sra_tinder_web:
     def __init__(self, sra_file_name):
         self.sra_file_name = sra_file_name
 
-    # ABSORBED INTO scrape_run()
-    # def scrape_organisms(self):
-    #     """
-    #     Scrapes the taxonomic information for a run accession.
-    #     :return: a list representing [most_abundant_organism, its_%_abundance, #_organisms_>_1%_abundance]
-    #     """
-    #     url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(self.sra_file_name)
-    #     string = ur.urlopen(url).read().decode() # This holds the full URL data
-    #     output = []  # This is the final returned value
-    #     ret = {}  #its a hackathon, ret will hold k,v style output
-    #
-    #     count_organisms = 0
-    #     table = str(re.findall("<h3>Strong signals<\/h3>.*?<\/table>", string, re.DOTALL))
-    #     rows = re.findall("<tr>.*?<\/tr>", table, re.DOTALL)
-    #     for row in rows:
-    #         values = re.findall("<tdstyle=\"padding:.*?\">(.*?)<\/td>", str(row.replace('\n', '').replace(' ', '')),
-    #                             re.DOTALL)
-    #         if len(values) < 4:
-    #             # print("Error: {}".format(values))
-    #             continue
-    #         count_organisms += 1
-    #         if len(output) == 0 or float(values[3]) > output[1]:
-    #             output += [values[1], float(values[3])]
-    #     output += [count_organisms]
-    #
-    #     ret['top_org'] = output[0]
-    #     ret['top_org_%'] = output[1]
-    #     ret['#_1%_orgs'] = output[2]
-    #
-    #
-    #
-    #
-    #     return ret
+
 
 
     def scrape_run(self, essential=True):
